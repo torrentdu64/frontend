@@ -24,10 +24,42 @@ interface PaginationInfo {
 const CustomerList = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
- 
+  const [loading, setLoading] = useState(true);
+
+  const fetchCustomers = async (page = 1) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`http://localhost:3000/api/v1/customers?page=${page}&per_page=20`);
+      const data = await response.json();
+      setCustomers(data.customers);
+      setPagination(data.pagination);
+    } catch (error) {
+      console.error('Error fetching customers:', error);
+      setCustomers([]);
+      setPagination(null);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
+
+  const handlePageChange = (page: number) => {
+    fetchCustomers(page);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
   return (
     <>
-      return list
+      Customer List
     </>
   );
 };
